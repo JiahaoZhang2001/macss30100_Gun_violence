@@ -16,6 +16,10 @@ This repository contains my final project for MACS 30100. The project studies wh
 
 **Methods and Analysis**: The analysis is written in R with `tidyverse` and `tidymodels`. I build a leakage-safe preprocessing and modeling pipeline, compare logistic regression, random forest, and XGBoost, and then evaluate class-imbalance strategies including class weighting, oversampling, and threshold moving.
 
+**Main findings**: Random forest was the strongest underlying model in the three-model comparison by ROC AUC, but the default `0.50` cutoff performed poorly for fatal-case detection. The most defensible final operating-point choice for the paper's screening-style goal was a more conservative threshold-moving rule for random forest chosen under a validation-stage specificity target of about `0.75`.
+
+**Conclusion**: Structured incident-level features contain limited but still useful signal for screening-style prediction. They support better fatal-case detection than the default threshold, but the practical trade-off between recall and false positives remains substantial.
+
 **Project strength**: model pipeline design and evaluation under class imbalance.
 
 ---
@@ -51,8 +55,6 @@ macss30100_Gun_violence/
     │   ├── threshold_results_balanced_accuracy.csv
     │   └── threshold_results_specificity_constrained.csv
     ├── images/
-    │   ├── calibration.png
-    │   ├── confusion_matrices.png
     │   ├── interactive_incident_map.html
     │   ├── interactive_incident_map_preview.png
     │   ├── probability_distributions.png
