@@ -221,16 +221,16 @@ threshold_constrained_tbl <- tibble(
 ```
 
 ## 1. Introduction
-This report studies a practical prediction problem: using structured incident-level information, can we distinguish gun violence incidents that become fatal from those that do not? The outcome is binary, fatal versus non-fatal, and the predictors are limited to structured variables that are plausibly available from the incident record itself, including time, broad location, district identifiers, basic gun information, and simple derived indicators from the address and age-group fields. The practical value is not perfect classification, but whether structured incident records can support earlier screening of higher-risk cases. The goal is predictive rather than causal. I am not estimating the effect of any one factor. I am asking whether a cleaned, defensible feature set contains useful signal for classification.
+This report studies a practical prediction problem: using structured incident-level information, can we distinguish gun violence incidents that become fatal from those that do not? The outcome is binary, fatal versus non-fatal, and the predictors are limited to structured variables that are plausibly available from the incident record itself, including time, broad location, district identifiers, basic gun information, and simple derived indicators from the address and age-group fields. The practical value is not perfect classification, but whether structured incident records can support earlier screening of higher-risk cases. The goal is predictive rather than causal. I am not estimating the effect of any one factor. I am asking whether a cleaned, defensible feature set contains useful signal for classification. More substantively, the project also asks whether the limited structured information available in incident records is enough to support meaningful severity screening, and whether the usable signal comes mainly from immediate incident descriptors or from broader contextual and place-related markers.
 
 Recent work on firearm violence and related public-safety outcomes suggests two relevant points. First, even noisy administrative or surveillance-style data can contain predictive information about victimization or severe injury outcomes [@goin2018; @heller2022; @polcari2023; @zhou2024jamia]. Second, prediction is still difficult because these data are incomplete, unevenly reported, and often dominated by non-event or lower-severity cases [@swedo2023]. Prior work also emphasizes that the practical goal is often screening or community risk identification rather than perfect classification [@polcari2023]. Those concerns matter directly here. Structured contextual variables may still carry signal, but missingness can distort what is usable, and class imbalance can make a model look stronger than it really is if evaluation relies too heavily on raw accuracy.
 
 This project gives a clean comparison. I keep the revised leakage-safe pipeline, use logistic regression as the formal baseline model, compare it against two selected nonlinear models on the same final feature set, and then examine how class weighting, oversampling, and threshold moving change the practical detection of fatal incidents. That second step matters because the model with the best overall ranking is not automatically the best decision rule for the minority class.
 
-Repository / shared materials link: [final public link to be inserted]
+Repository / shared materials link: [macss30100_Gun_violence](https://github.com/JiahaoZhang2001/macss30100_Gun_violence)
 
 ## 2. Data and Outcome Definition
-The original records come from Gun Violence Archive incident listings that had already been assembled for the course project into a local structured file. The analysis in this report begins from [`stage3.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/Data/stage3.csv), which is the project’s cleaned stage-three working dataset rather than a live scrape. It contains incident-level observations, original URLs, and a larger set of structured fields created earlier in the project workflow. In other words, `stage3.csv` is the final local analysis file derived from the original incident-source records, and every table and figure below is produced from that file or from saved result tables generated from it.
+The original records come from Gun Violence Archive incident listings that had already been assembled for the course project into a local structured file. The analysis in this report begins from [`stage3.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/Data/stage3.csv), which is the project’s cleaned stage-three working dataset rather than a live scrape. It contains incident-level observations, original URLs, and a larger set of structured fields created earlier in the project workflow. The underlying source records were collected earlier in the course project workflow, and the present report does not re-scrape the live source. Instead, it starts from the saved cleaned file `stage3.csv`, which was generated from those earlier source records and retained as the local analysis dataset for the final report. In other words, `stage3.csv` is the final local analysis file derived from the original incident-source records, and every table and figure below is produced from that file or from saved result tables generated from it.
 
 The binary outcome is defined as
 
@@ -452,54 +452,7 @@ stage3 |>
 
 This figure gives a more direct spatial view of the same point. Incidents are not spread evenly across the map, and the highest-density areas for fatal and non-fatal incidents overlap only partly rather than perfectly. That does not mean location alone determines fatality, but it does suggest that geographic context carries predictive information beyond simple incident counts. These spatial differences may reflect contextual and reporting differences, not causal effects of place itself. It also helps explain why location variables later appear as important contributors in the tree-based models. Overall, the figure supports keeping latitude, longitude, and broader administrative location fields in the final feature set while still treating them as contextual predictors rather than causal claims.
 
-For presentation in the PDF report, I keep this static density figure because it is easier to read on the page. I also generated an interactive leaflet version as a supplementary visualization of the same spatial pattern. The interactive version is useful for browsing local concentration more directly, but the static density figure is better suited to the final written report.
-
-The next screenshot shows the interactive supplement in a fixed PDF-friendly form. I include it only as a companion visualization, not as a main analytical figure, because the static density plot above is easier to read in print while the interactive version is better for browsing local clusters and pop-up details. A standalone HTML supplement was also generated separately as `interactive_incident_map.html`.
-
-```{r}
-#| label: leaflet-map-screenshot
-#| out-width: "90%"
-#| fig-align: center
-knitr::include_graphics("images/interactive_incident_map_preview.png")
-```
-
-The code below shows the core construction of that leaflet supplement. I keep only the main mapping steps here, because the final submission is a PDF report and the full interactive file is provided separately.
-
-```{r}
-#| label: leaflet-map-code
-#| echo: true
-#| eval: false
-library(leaflet)
-
-map_df <- stage3 |>
-  filter(!is.na(latitude), !is.na(longitude)) |>
-  mutate(
-    fatal = if_else(n_killed > 0, "fatal", "non_fatal")
-  )
-
-leaflet(map_df) |>
-  addProviderTiles(providers$CartoDB.Positron) |>
-  addCircleMarkers(
-    lng = ~longitude,
-    lat = ~latitude,
-    radius = 2,
-    color = ~if_else(fatal == "fatal", "#C0392B", "#7F8C8D"),
-    fillOpacity = 0.5,
-    stroke = FALSE
-  ) |>
-  setView(
-    lng = mean(map_df$longitude, na.rm = TRUE),
-    lat = mean(map_df$latitude, na.rm = TRUE),
-    zoom = 4
-  ) |>
-  addLegend(
-    position = "bottomright",
-    colors = c("#7F8C8D", "#C0392B"),
-    labels = c("non_fatal", "fatal"),
-    title = "Incident outcome",
-    opacity = 1
-  )
-```
+For presentation in the PDF report, I keep this static density figure because it is easier to read on the page. I also created an interactive leaflet map that extends this same spatial view and makes it easier to inspect local clustering more directly. That interactive version can be found in the GitHub materials as `interactive_incident_map.html`, while the static density figure above remains the clearer choice for the main written report.
 
 ```{r}
 #| label: top-characteristics
@@ -698,7 +651,7 @@ I report ROC AUC, accuracy, balanced accuracy, fatal sensitivity, and non-fatal 
 
 In this setting, a model with low sensitivity misses many fatal incidents, while a model with low specificity falsely flags many non-fatal incidents as fatal. That is why the later imbalance analysis emphasizes the trade-off between these two quantities rather than reading accuracy alone.
 
-The metric rule in the rest of the report is simple. I select the underlying classifier by ROC AUC because it evaluates ranking performance without fixing a cutoff. I then select the final operating threshold by balanced accuracy, while using fatal recall and non-fatal specificity to interpret the practical trade-off. For this application, I still place somewhat more weight on recall for the fatal class than on precision or raw accuracy alone, because missing a truly fatal incident is more costly than flagging some non-fatal incidents as higher risk. At the same time, I do not want false positives to grow without bound. That is why recall informs the interpretation, but does not replace ROC AUC or balanced accuracy as the main selection rules.
+The metric rule in the rest of the report is simple. I select the underlying classifier by ROC AUC because it evaluates ranking performance without fixing a cutoff. I then select the final operating threshold by balanced accuracy, while using fatal recall and non-fatal specificity to interpret the practical trade-off. For this application, I still place somewhat more weight on recall for the fatal class than on precision or raw accuracy alone, because missing a truly fatal incident is more costly than flagging some non-fatal incidents as higher risk. At the same time, I do not want false positives to grow without bound. That is why recall informs the interpretation, but does not replace ROC AUC as the rule for choosing the underlying classifier. For the final operating rule, I compare balanced-accuracy-based threshold moving with a more conservative specificity-constrained threshold check.
 
 ## 6. Baseline Model Comparison
 The baseline comparison uses the saved held-out results from [`three_model_default_results.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/results/three_model_default_results.csv), which apply the same cleaned feature set and default threshold of 0.50 on the 40,000-observation modeling sample.
@@ -901,13 +854,13 @@ knitr::include_graphics("images/rf_shap_summary.png")
 The SHAP summary shows which predictors contribute most strongly to the random forest’s fatal-probability predictions. The dominant variables are mainly spatial and contextual fields, including latitude/longitude, administrative location indicators, and city or county. That is substantively useful because it matches the earlier EDA: broad geographic context appears to carry real predictive signal in this dataset, even if it should be interpreted cautiously rather than causally. A second pattern is that some gun-related categories, especially unknown-style entries, also matter. One plausible interpretation is that missingness and recording style are themselves informative about the kinds of incidents that enter the file and how fully they are documented. Time markers such as year and month also contribute, which suggests that temporal context and period-specific reporting environments help separate incidents beyond any single incident attribute. These are predictive associations about how the classifier uses structured context, not claims about mechanism.
 
 ## 9. Discussion and Limitations
-The main finding is fairly modest, but still useful. Structured incident-level features do contain predictive signal for fatal versus non-fatal outcomes, but the signal is limited and easy to overstate if evaluation focuses only on accuracy. This is consistent with the broader literature: administrative and surveillance-style records can support predictive screening, but their usefulness depends heavily on data quality, missingness, and careful modeling choices [@goin2018; @heller2022; @swedo2023].
+The main finding is fairly modest, but still useful. Structured incident-level features do contain predictive signal for fatal versus non-fatal outcomes, but the signal is limited and easy to overstate if evaluation focuses only on accuracy. This is consistent with the broader literature: administrative and surveillance-style records can support predictive screening, but their usefulness depends heavily on data quality, missingness, and careful modeling choices [@goin2018; @heller2022; @swedo2023]. This pattern is especially consistent with work arguing that these kinds of records are more useful for screening than for definitive classification. In that sense, the present results are less a story of strong individual-level prediction than a story of limited but still usable contextual signal under noisy reporting conditions.
 
 The baseline comparison starts from logistic regression as the formal benchmark, but the direct comparison shows random forest as the strongest default model in this project by ROC AUC. The imbalance analysis then shows a clearer practical distinction. Class weighting changes little. Oversampling helps detect more fatal incidents, but often with a sizable specificity cost. The preferred final setup is the random forest under the more conservative specificity-constrained threshold-moving rule, because it improves fatal-case detection relative to the default cutoff while keeping non-fatal specificity near the intended bound. Logistic regression remains a simpler and reasonably competitive benchmark, while XGBoost becomes more conservative under the same constrained-threshold rule.
 
 This preference also reflects the practical meaning of the prediction task. In a screening-style setting, missing fatal incidents is more costly than flagging some non-fatal incidents, but false positives should not increase without limit. A false negative means the model completely misses a higher-risk case, while a false positive usually means extra attention or follow-up on a case that may not need it. For that reason, I treat fatal recall as somewhat more important than precision or raw accuracy alone, but not as the only objective. The final recommendation is therefore an operating-point choice for this dataset and use case, not a universally optimal classifier.
 
-Several limitations remain. First, the source file contains important missingness and reporting variation, especially in detailed participant and narrative-style fields. Second, the binary fatal outcome is substantively meaningful but still coarse. Third, even the retained structured variables may reflect uneven reporting practices across places and years. Fourth, the final assessment still relies on an internal held-out test split rather than on a separate external validation dataset. A related transportability concern is especially important here: because the retained signal depends heavily on contextual and place-related features, performance may degrade when the model is transported to new regions, periods, or recording environments. Finally, the SHAP analysis is an approximate interpretation step on a smaller subset for computational reasons, so it should be used to summarize model behavior rather than to make fine-grained substantive claims.
+Several limitations remain. First, the source file contains important missingness and reporting variation, especially in detailed participant and narrative-style fields. Second, the binary fatal outcome is substantively meaningful but still coarse. Third, even the retained structured variables may reflect uneven reporting practices across places and years. Fourth, the final assessment still relies on an internal held-out test split rather than on a separate external validation dataset. A related transportability concern is especially important here: because the retained signal depends heavily on contextual and place-related features, performance may degrade when the model is transported to new regions, periods, or recording environments. Finally, the SHAP analysis is an approximate interpretation step on a smaller subset for computational reasons, so it should be used to summarize model behavior rather than to make fine-grained substantive claims. The main bottleneck in this project is that the strongest usable predictors are also the most context-dependent, which makes the final model more suitable for internal screening than for broad transport. With more time, the next step would be external validation on a later or separate incident file, along with a cleaner comparison of how much performance comes from broad location context versus simpler incident descriptors.
 
 ## 10. Conclusion
 This project used a cleaned incident-level dataset to predict whether a gun violence incident would be fatal or non-fatal. The final report keeps a leakage-safe pipeline, a restrained feature set, and a direct comparison between a formal logistic-regression baseline and two selected nonlinear models on a 40,000-observation modeling sample.
