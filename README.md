@@ -111,7 +111,7 @@ I used AI tools as support tools during the project, mainly for:
 - understanding what a fuller model deployment workflow would look like
 - renaming files and organizing the final submission repository
 
-I did not use AI as a substitute for choosing the research question, designing the model comparison, interpreting the results, or making the final analytical claims. When I used AI suggestions, I made sure I understood them before applying them and then used them myself in the project. I am responsible for the accuracy of the report, code, and repository contents.
+AI was mainly a support tool in the project rather than a replacement for my own decisions. When I used suggestions from AI, I tried to understand them before applying them and then adapted them to my own work. I remain responsible for the accuracy of the report, code, and repository contents.
 
 ---
 
