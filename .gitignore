@@ -1,0 +1,11 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+*.log
+
+Episode2/r-lib/
+Episode2/*backup*
+Episode2/tmp_*
+Episode2/diagnose_*
+

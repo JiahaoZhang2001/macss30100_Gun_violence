@@ -1,0 +1,12 @@
+setup,threshold,roc_auc,accuracy,bal_accuracy,sensitivity_fatal,specificity_nonfatal,tn,fp,fn,tp
+Random forest | default,0.5,0.6632,0.7738,0.5233,0.0684,0.9782,6067,1674,135,123
+Random forest | class weight,0.5,0.6654,0.7732,0.5231,0.069,0.9773,6061,1673,141,124
+Random forest | oversampled,0.5,0.6572,0.7298,0.5756,0.2955,0.8557,5307,1266,895,531
+Random forest | threshold moved,0.19,0.6632,0.5587,0.6127,0.7106,0.5147,3192,520,3010,1277
+XGBoost | default,0.5,0.6234,0.7753,0.5,0,1,6202,1797,0,0
+XGBoost | class weight,0.5,0.6202,0.7753,0.5,0,1,6202,1797,0,0
+XGBoost | oversampled,0.5,0.6266,0.5739,0.5901,0.6194,0.5608,3478,684,2724,1113
+XGBoost | threshold moved,0.23,0.6234,0.5986,0.5896,0.5732,0.6059,3758,767,2444,1030
+Logistic regression | default,0.5,0.6348,0.7721,0.5165,0.0523,0.9807,6082,1703,120,94
+Logistic regression | oversampled,0.5,0.6318,0.5862,0.5901,0.5971,0.583,3616,724,2586,1073
+Logistic regression | threshold moved,0.2,0.6348,0.5324,0.591,0.6973,0.4847,3006,544,3196,1253

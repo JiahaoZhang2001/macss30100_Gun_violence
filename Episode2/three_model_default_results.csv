@@ -1,0 +1,4 @@
+model,roc_auc,accuracy,bal_accuracy,sensitivity_fatal,specificity_nonfatal
+Random forest,0.6632,0.7738,0.5233,0.0684,0.9782
+XGBoost,0.6234,0.7753,0.5,0,1
+Logistic regression,0.6348,0.7721,0.5165,0.0523,0.9807
