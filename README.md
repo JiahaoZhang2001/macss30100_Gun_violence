@@ -91,16 +91,13 @@ macss30100_Gun_violence/
 For the main submitted scripts:
 
 - `Final Episode/final_submission_episode.qmd`  
-  Purpose: final Quarto report that loads the cleaned dataset and saved results, rebuilds key plots and tables, and presents the final analysis.  
-  AI disclosure: AI tools were used for targeted editing help, wording cleanup, naming cleanup, and repository organization. Final analysis decisions and all submitted content were reviewed and approved by the author.
+  Purpose: final Quarto report that loads the cleaned dataset and saved results, rebuilds key plots and tables, and presents the final analysis.
 
 - `Final Episode/final_model_pipeline.R`  
-  Purpose: main modeling pipeline for fitting the final comparison models and class-imbalance setups with `tidymodels`.  
-  AI disclosure: AI tools were used for debugging help and code organization suggestions; the pipeline design and final implementation choices were reviewed by the author.
+  Purpose: main modeling pipeline for fitting the final comparison models and class-imbalance setups with `tidymodels`.
 
 - `Final Episode/tune_tree_models.R`  
-  Purpose: tuning workflow for the tree-based models used in the final comparison.  
-  AI disclosure: AI tools were used for debugging help and code cleanup suggestions; final tuning choices and retained outputs were reviewed by the author.
+  Purpose: tuning workflow for the tree-based models used in the final comparison.
 
 ---
 
@@ -110,10 +107,11 @@ I used AI tools as support tools during the project, mainly for:
 
 - checking wording and consistency in the written report
 - debugging small coding issues in R and Quarto
+- learning how to use some packages and functions more effectively
+- understanding what a fuller model deployment workflow would look like
 - renaming files and organizing the final submission repository
-- reviewing whether the report text and saved result filenames matched
 
-I did not use AI as a substitute for choosing the research question, designing the model comparison, interpreting the results, or making the final analytical claims. I am responsible for the accuracy of the report, code, and repository contents.
+I did not use AI as a substitute for choosing the research question, designing the model comparison, interpreting the results, or making the final analytical claims. When I used AI suggestions, I made sure I understood them before applying them and then used them myself in the project. I am responsible for the accuracy of the report, code, and repository contents.
 
 ---
 
