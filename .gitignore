@@ -8,4 +8,9 @@ Episode2/r-lib/
 Episode2/*backup*
 Episode2/tmp_*
 Episode2/diagnose_*
-
+Final Episode/r-lib/
+Final Episode/*backup*
+Final Episode/tmp_*
+Final Episode/diagnose_*
+Final Episode/*_files/
+Final Episode/*.tex

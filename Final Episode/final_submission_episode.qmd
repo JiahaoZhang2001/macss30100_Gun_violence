@@ -230,7 +230,7 @@ This project gives a clean comparison. I keep the revised leakage-safe pipeline,
 Repository / shared materials link: [final public link to be inserted]
 
 ## 2. Data and Outcome Definition
-The original records come from Gun Violence Archive incident listings that had already been assembled for the course project into a local structured file. The analysis in this report begins from [`stage3.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Episode2/Data/stage3.csv), which is the project’s cleaned stage-three working dataset rather than a live scrape. It contains incident-level observations, original URLs, and a larger set of structured fields created earlier in the project workflow. In other words, `stage3.csv` is the final local analysis file derived from the original incident-source records, and every table and figure below is produced from that file or from saved result tables generated from it.
+The original records come from Gun Violence Archive incident listings that had already been assembled for the course project into a local structured file. The analysis in this report begins from [`stage3.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/Data/stage3.csv), which is the project’s cleaned stage-three working dataset rather than a live scrape. It contains incident-level observations, original URLs, and a larger set of structured fields created earlier in the project workflow. In other words, `stage3.csv` is the final local analysis file derived from the original incident-source records, and every table and figure below is produced from that file or from saved result tables generated from it.
 
 The binary outcome is defined as
 
@@ -701,7 +701,7 @@ In this setting, a model with low sensitivity misses many fatal incidents, while
 The metric rule in the rest of the report is simple. I select the underlying classifier by ROC AUC because it evaluates ranking performance without fixing a cutoff. I then select the final operating threshold by balanced accuracy, while using fatal recall and non-fatal specificity to interpret the practical trade-off. For this application, I still place somewhat more weight on recall for the fatal class than on precision or raw accuracy alone, because missing a truly fatal incident is more costly than flagging some non-fatal incidents as higher risk. At the same time, I do not want false positives to grow without bound. That is why recall informs the interpretation, but does not replace ROC AUC or balanced accuracy as the main selection rules.
 
 ## 6. Baseline Model Comparison
-The baseline comparison uses the saved held-out results from [`three_model_default_results.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Episode2/three_model_default_results.csv), which apply the same cleaned feature set and default threshold of 0.50 on the 40,000-observation modeling sample.
+The baseline comparison uses the saved held-out results from [`three_model_default_results.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/three_model_default_results.csv), which apply the same cleaned feature set and default threshold of 0.50 on the 40,000-observation modeling sample.
 
 ```{r}
 #| label: baseline-comparison
