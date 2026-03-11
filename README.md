@@ -1,20 +1,130 @@
-# MACS 30100 Final Project
+# Predicting Fatal vs. Non-Fatal Gun Violence Incidents from Structured Incident-Level Features
 
-This repository contains my final project for MACS 30100 on predicting fatal vs. non-fatal gun violence incidents from structured incident-level features.
+---
 
-## Main files
+# Project Description
 
-- [`Final Episode/final_submission_episode.pdf`](Final%20Episode/final_submission_episode.pdf): final written report
-- [`Final Episode/final_submission_episode.qmd`](Final%20Episode/final_submission_episode.qmd): source file for the report
-- [`Final Episode/final_model_pipeline.R`](Final%20Episode/final_model_pipeline.R): main modeling pipeline for the final comparison and imbalance analysis
-- [`Final Episode/tune_tree_models.R`](Final%20Episode/tune_tree_models.R): tuning workflow for the tree-based models
+## Summary
 
-## Supplementary files
+This repository contains my final project for MACS 30100. The project studies whether structured incident-level records can help distinguish fatal gun violence incidents from non-fatal ones.
 
-- [`Final Episode/images/interactive_incident_map.html`](Final%20Episode/images/interactive_incident_map.html): interactive leaflet map supplement
-- [`Final Episode/images/interactive_incident_map_preview.png`](Final%20Episode/images/interactive_incident_map_preview.png): static preview of the interactive map used in the PDF
+- **Topic**: binary prediction of fatal versus non-fatal gun violence incidents
+- **Research question**: can a cleaned set of structured incident features provide useful signal for screening higher-risk cases?
+- **Why it matters**: in this setting, the practical goal is not perfect classification. It is whether incident records can support earlier screening of potentially more severe cases while staying realistic about class imbalance and false positives.
 
-## Notes
+## Additional info
 
-- The analysis code is written primarily with `tidyverse` and `tidymodels`.
-- The report is the main submission document; the HTML map is only a supplement and should be opened in a web browser.
+**Total lines of code**: approximately 1,288 executable lines across the three main submission files: `final_submission_episode.qmd`, `final_model_pipeline.R`, and `tune_tree_models.R`.
+
+**Methods and Analysis**: The analysis is written in R with `tidyverse` and `tidymodels`. I build a leakage-safe preprocessing and modeling pipeline, compare logistic regression, random forest, and XGBoost, and then evaluate class-imbalance strategies including class weighting, oversampling, and threshold moving.
+
+**Project strength**: model pipeline design and evaluation under class imbalance.
+
+---
+
+# Data
+
+- **Gun Violence Archive incident records (cleaned course project working file)**  
+  Link: [Gun Violence Archive](https://www.gunviolencearchive.org/)  
+  Collection method: original source data were collected earlier in the course workflow; this final report starts from a cleaned local working dataset, `stage3.csv`, derived from those incident records.  
+  Notes: the final report uses `stage3.csv` as the auditable analysis file rather than re-scraping live data during rendering. The file is not committed to GitHub because it exceeds the single-file size limit.
+
+---
+
+# Repository Structure
+
+```text
+macss30100_Gun_violence/
+├── README.md
+├── .gitignore
+└── Final Episode/
+    ├── final_submission_episode.qmd
+    ├── final_submission_episode.pdf
+    ├── final_model_pipeline.R
+    ├── tune_tree_models.R
+    ├── bibliography.bib
+    ├── three_model_default_results.csv
+    ├── model_results_imbalance_strategies.csv
+    ├── threshold_results_balanced_accuracy.csv
+    ├── threshold_results_specificity_constrained.csv
+    ├── images/
+    │   ├── interactive_incident_map.html
+    │   ├── interactive_incident_map_preview.png
+    │   ├── probability_distributions.png
+    │   ├── rf_shap_summary.png
+    │   └── tuning_summary.png
+    └── diagnostics/
+        └── plots/
+            ├── calibration.png
+            └── confusion_matrices.png
+```
+
+- `Final Episode/` contains the final report, main analysis scripts, saved model results, and supporting figures.
+- `Final Episode/images/` stores figures and supplementary visual materials referenced in the final submission.
+- `Final Episode/diagnostics/` stores additional checking outputs that support the modeling workflow.
+
+---
+
+# Libraries
+
+| Library | Version |
+|--------|--------|
+| tidyverse | 2.0.0 |
+| tidymodels | 1.4.1 |
+| themis | 1.0.3 |
+| janitor | 2.2.1 |
+| patchwork | 1.3.2 |
+| scales | 1.4.0 |
+| broom | 1.0.11 |
+| glue | 1.8.0 |
+| leaflet | 2.2.3 |
+| htmlwidgets | 1.6.4 |
+| vip | 0.4.5 |
+| xgboost | 3.2.0.1 |
+
+---
+
+# Contributions
+
+- **Jiahao Zhang**: completed the project individually, including data preparation decisions, feature engineering, tidymodels workflows, model tuning, class-imbalance analysis, threshold evaluation, diagnostics, visualizations, and final report writing.
+
+For the main submitted scripts:
+
+- `Final Episode/final_submission_episode.qmd`  
+  Author: Jiahao Zhang  
+  Purpose: final Quarto report that loads the cleaned dataset and saved results, rebuilds key plots and tables, and presents the final analysis.  
+  AI disclosure: AI tools were used for targeted editing help, wording cleanup, naming cleanup, and repository organization. Final analysis decisions and all submitted content were reviewed and approved by the author.
+
+- `Final Episode/final_model_pipeline.R`  
+  Author: Jiahao Zhang  
+  Purpose: main modeling pipeline for fitting the final comparison models and class-imbalance setups with `tidymodels`.  
+  AI disclosure: AI tools were used for debugging help and code organization suggestions; the pipeline design and final implementation choices were reviewed by the author.
+
+- `Final Episode/tune_tree_models.R`  
+  Author: Jiahao Zhang  
+  Purpose: tuning workflow for the tree-based models used in the final comparison.  
+  AI disclosure: AI tools were used for debugging help and code cleanup suggestions; final tuning choices and retained outputs were reviewed by the author.
+
+---
+
+# AI Usage Statement
+
+I used AI tools as support tools during the project, mainly for:
+
+- checking wording and consistency in the written report
+- debugging small coding issues in R and Quarto
+- renaming files and organizing the final submission repository
+- reviewing whether the report text and saved result filenames matched
+
+I did not use AI as a substitute for choosing the research question, designing the model comparison, interpreting the results, or making the final analytical claims. I am responsible for the accuracy of the report, code, and repository contents.
+
+---
+
+# Project Links
+
+- **Final written report**: [`Final Episode/final_submission_episode.pdf`](Final%20Episode/final_submission_episode.pdf)
+- **Quarto source**: [`Final Episode/final_submission_episode.qmd`](Final%20Episode/final_submission_episode.qmd)
+- **Interactive map supplement**: [`Final Episode/images/interactive_incident_map.html`](Final%20Episode/images/interactive_incident_map.html)
+- **Slides used in the in-class presentation**: not added yet
+- **Updated final slides (full version)**: not added yet
+- **Presentation video**: not added yet

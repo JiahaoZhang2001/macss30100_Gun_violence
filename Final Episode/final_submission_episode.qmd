@@ -454,7 +454,7 @@ This figure gives a more direct spatial view of the same point. Incidents are no
 
 For presentation in the PDF report, I keep this static density figure because it is easier to read on the page. I also generated an interactive leaflet version as a supplementary visualization of the same spatial pattern. The interactive version is useful for browsing local concentration more directly, but the static density figure is better suited to the final written report.
 
-The next screenshot shows the interactive supplement in a fixed PDF-friendly form. I include it only as a companion visualization, not as a main analytical figure, because the static density plot above is easier to read in print while the interactive version is better for browsing local clusters and pop-up details. The standalone supplement is provided separately as `interactive_incident_map.html`.
+The next screenshot shows the interactive supplement in a fixed PDF-friendly form. I include it only as a companion visualization, not as a main analytical figure, because the static density plot above is easier to read in print while the interactive version is better for browsing local clusters and pop-up details. A standalone HTML supplement was also generated separately as `interactive_incident_map.html`.
 
 ```{r}
 #| label: leaflet-map-screenshot
@@ -815,7 +815,7 @@ This produces a more meaningful shift than weighting because it changes what the
 #| label: probability-diagnostics
 #| out-width: "90%"
 #| fig-align: center
-knitr::include_graphics("diagnostics/plots/probability_distributions.png")
+knitr::include_graphics("images/probability_distributions.png")
 ```
 
 This diagnostic plot shows why oversampling matters in this project. In the default models, many fatal incidents already receive somewhat higher predicted probabilities than non-fatal incidents, but a large share of them still stays below the default `0.50` cutoff. This helps explain why a model can have a reasonable ROC AUC while still missing many fatal cases at the classification stage. After oversampling, the distributions shift to the right, so more fatal incidents cross the decision threshold. The benefit is higher fatal recall, but the cost is more false positives. That trade-off is why the later threshold discussion matters.
