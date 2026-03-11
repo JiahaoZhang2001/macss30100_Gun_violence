@@ -37,6 +37,10 @@ This repository contains my final project for MACS 30100. The project studies wh
 macss30100_Gun_violence/
 ├── README.md
 ├── .gitignore
+├── docs/
+│   ├── .nojekyll
+│   ├── index.html
+│   └── interactive_incident_map.html
 └── Final Episode/
     ├── final_submission_episode.qmd
     ├── final_submission_episode.pdf
@@ -60,6 +64,7 @@ macss30100_Gun_violence/
 ```
 
 - `Final Episode/` contains the final report, main analysis scripts, saved model results, and supporting figures.
+- `docs/` stores the GitHub Pages files for the interactive map supplement.
 - `Final Episode/images/` stores figures and supplementary visual materials referenced in the final submission.
 - `Final Episode/diagnostics/` stores additional checking outputs that support the modeling workflow.
 
@@ -120,5 +125,6 @@ AI was mainly a support tool in the project rather than a replacement for my own
 - **Final written report**: [`Final Episode/final_submission_episode.pdf`](Final%20Episode/final_submission_episode.pdf)
 - **Quarto source**: [`Final Episode/final_submission_episode.qmd`](Final%20Episode/final_submission_episode.qmd)
 - **Interactive map supplement**: [`Final Episode/images/interactive_incident_map.html`](Final%20Episode/images/interactive_incident_map.html)
+- **Interactive map webpage**: `https://jiahaozhang2001.github.io/macss30100_Gun_violence/` (after GitHub Pages is enabled)
 - **Slides**: to be added later
 - **Presentation video**: not added yet
