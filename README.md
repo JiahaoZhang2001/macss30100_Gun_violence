@@ -14,8 +14,6 @@ This repository contains my final project for MACS 30100. The project studies wh
 
 ## Additional info
 
-**Total lines of code**: approximately 1,288 executable lines across the three main submission files: `final_submission_episode.qmd`, `final_model_pipeline.R`, and `tune_tree_models.R`.
-
 **Methods and Analysis**: The analysis is written in R with `tidyverse` and `tidymodels`. I build a leakage-safe preprocessing and modeling pipeline, compare logistic regression, random forest, and XGBoost, and then evaluate class-imbalance strategies including class weighting, oversampling, and threshold moving.
 
 **Project strength**: model pipeline design and evaluation under class imbalance.
