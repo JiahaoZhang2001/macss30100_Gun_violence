@@ -36,9 +36,9 @@ set.seed(30100)
 #| label: load-files
 #| include: false
 data_path <- "Data/stage3.csv"
-default_results_path <- "three_model_default_results.csv"
-imbalance_results_path <- "model_results_imbalance_strategies.csv"
-threshold_results_path <- "threshold_results_balanced_accuracy.csv"
+default_results_path <- "results/three_model_default_results.csv"
+imbalance_results_path <- "results/model_results_imbalance_strategies.csv"
+threshold_results_path <- "results/threshold_results_balanced_accuracy.csv"
 
 required_paths <- c(
   data_path,
@@ -701,7 +701,7 @@ In this setting, a model with low sensitivity misses many fatal incidents, while
 The metric rule in the rest of the report is simple. I select the underlying classifier by ROC AUC because it evaluates ranking performance without fixing a cutoff. I then select the final operating threshold by balanced accuracy, while using fatal recall and non-fatal specificity to interpret the practical trade-off. For this application, I still place somewhat more weight on recall for the fatal class than on precision or raw accuracy alone, because missing a truly fatal incident is more costly than flagging some non-fatal incidents as higher risk. At the same time, I do not want false positives to grow without bound. That is why recall informs the interpretation, but does not replace ROC AUC or balanced accuracy as the main selection rules.
 
 ## 6. Baseline Model Comparison
-The baseline comparison uses the saved held-out results from [`three_model_default_results.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/three_model_default_results.csv), which apply the same cleaned feature set and default threshold of 0.50 on the 40,000-observation modeling sample.
+The baseline comparison uses the saved held-out results from [`three_model_default_results.csv`](/Users/jiahaozhang/Desktop/macs%2030100/project/Final%20Episode/results/three_model_default_results.csv), which apply the same cleaned feature set and default threshold of 0.50 on the 40,000-observation modeling sample.
 
 ```{r}
 #| label: baseline-comparison

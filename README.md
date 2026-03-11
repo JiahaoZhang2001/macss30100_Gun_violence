@@ -45,10 +45,11 @@ macss30100_Gun_violence/
     ├── final_model_pipeline.R
     ├── tune_tree_models.R
     ├── bibliography.bib
-    ├── three_model_default_results.csv
-    ├── model_results_imbalance_strategies.csv
-    ├── threshold_results_balanced_accuracy.csv
-    ├── threshold_results_specificity_constrained.csv
+    ├── results/
+    │   ├── three_model_default_results.csv
+    │   ├── model_results_imbalance_strategies.csv
+    │   ├── threshold_results_balanced_accuracy.csv
+    │   └── threshold_results_specificity_constrained.csv
     ├── images/
     │   ├── calibration.png
     │   ├── confusion_matrices.png
@@ -61,14 +62,15 @@ macss30100_Gun_violence/
 
 - `Final Episode/` contains the final report, main analysis scripts, saved model results, and supporting figures.
 - `docs/` stores the GitHub Pages files for the interactive map supplement.
+- `Final Episode/results/` stores the saved result tables used in the report.
 - `Final Episode/images/` stores figures and supplementary visual materials referenced in the final submission.
 
 Saved result tables:
 
-- `three_model_default_results.csv` stores the default-threshold baseline comparison for logistic regression, random forest, and XGBoost.
-- `model_results_imbalance_strategies.csv` stores the held-out results for the class-weighting, oversampling, and threshold-moving setups.
-- `threshold_results_balanced_accuracy.csv` stores the threshold-search results when balanced accuracy alone is used as the validation criterion.
-- `threshold_results_specificity_constrained.csv` stores the threshold-search results under the more conservative validation-stage specificity constraint used in the final recommended operating point.
+- `results/three_model_default_results.csv` stores the default-threshold baseline comparison for logistic regression, random forest, and XGBoost.
+- `results/model_results_imbalance_strategies.csv` stores the held-out results for the class-weighting, oversampling, and threshold-moving setups.
+- `results/threshold_results_balanced_accuracy.csv` stores the threshold-search results when balanced accuracy alone is used as the validation criterion.
+- `results/threshold_results_specificity_constrained.csv` stores the threshold-search results under the more conservative validation-stage specificity constraint used in the final recommended operating point.
 
 ---
 
