@@ -123,6 +123,6 @@ AI was mainly a support tool in the project rather than a replacement for my own
 - **Final written report**: [`Final Episode/final_submission_episode.pdf`](Final%20Episode/final_submission_episode.pdf)
 - **Quarto source**: [`Final Episode/final_submission_episode.qmd`](Final%20Episode/final_submission_episode.qmd)
 - **Interactive map supplement**: [`Final Episode/images/interactive_incident_map.html`](Final%20Episode/images/interactive_incident_map.html)
-- **Interactive map webpage**: `https://jiahaozhang2001.github.io/macss30100_Gun_violence/` (after GitHub Pages is enabled)
+- **Interactive map webpage**: [Open the interactive map](https://jiahaozhang2001.github.io/macss30100_Gun_violence/)
 - **Slides**: to be added later
 - **Presentation video**: not added yet
