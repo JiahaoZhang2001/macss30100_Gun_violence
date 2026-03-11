@@ -50,21 +50,25 @@ macss30100_Gun_violence/
     ├── threshold_results_balanced_accuracy.csv
     ├── threshold_results_specificity_constrained.csv
     ├── images/
+    │   ├── calibration.png
+    │   ├── confusion_matrices.png
     │   ├── interactive_incident_map.html
     │   ├── interactive_incident_map_preview.png
     │   ├── probability_distributions.png
     │   ├── rf_shap_summary.png
     │   └── tuning_summary.png
-    └── diagnostics/
-        └── plots/
-            ├── calibration.png
-            └── confusion_matrices.png
 ```
 
 - `Final Episode/` contains the final report, main analysis scripts, saved model results, and supporting figures.
 - `docs/` stores the GitHub Pages files for the interactive map supplement.
 - `Final Episode/images/` stores figures and supplementary visual materials referenced in the final submission.
-- `Final Episode/diagnostics/` stores additional checking outputs that support the modeling workflow.
+
+Saved result tables:
+
+- `three_model_default_results.csv` stores the default-threshold baseline comparison for logistic regression, random forest, and XGBoost.
+- `model_results_imbalance_strategies.csv` stores the held-out results for the class-weighting, oversampling, and threshold-moving setups.
+- `threshold_results_balanced_accuracy.csv` stores the threshold-search results when balanced accuracy alone is used as the validation criterion.
+- `threshold_results_specificity_constrained.csv` stores the threshold-search results under the more conservative validation-stage specificity constraint used in the final recommended operating point.
 
 ---
 
