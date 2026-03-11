@@ -91,17 +91,14 @@ macss30100_Gun_violence/
 For the main submitted scripts:
 
 - `Final Episode/final_submission_episode.qmd`  
-  Author: Jiahao Zhang  
   Purpose: final Quarto report that loads the cleaned dataset and saved results, rebuilds key plots and tables, and presents the final analysis.  
   AI disclosure: AI tools were used for targeted editing help, wording cleanup, naming cleanup, and repository organization. Final analysis decisions and all submitted content were reviewed and approved by the author.
 
 - `Final Episode/final_model_pipeline.R`  
-  Author: Jiahao Zhang  
   Purpose: main modeling pipeline for fitting the final comparison models and class-imbalance setups with `tidymodels`.  
   AI disclosure: AI tools were used for debugging help and code organization suggestions; the pipeline design and final implementation choices were reviewed by the author.
 
 - `Final Episode/tune_tree_models.R`  
-  Author: Jiahao Zhang  
   Purpose: tuning workflow for the tree-based models used in the final comparison.  
   AI disclosure: AI tools were used for debugging help and code cleanup suggestions; final tuning choices and retained outputs were reviewed by the author.
 
