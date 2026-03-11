@@ -24,10 +24,10 @@ This repository contains my final project for MACS 30100. The project studies wh
 
 # Data
 
-- **Gun Violence Archive incident records (cleaned course project working file)**  
-  Link: [Gun Violence Archive](https://www.gunviolencearchive.org/)  
-  Collection method: original source data were collected earlier in the course workflow; this final report starts from a cleaned local working dataset, `stage3.csv`, derived from those incident records.  
-  Notes: the final report uses `stage3.csv` as the auditable analysis file rather than re-scraping live data during rendering. The file is not committed to GitHub because it exceeds the single-file size limit.
+- **Gun violence incident data (cleaned course project working file)**  
+  Link: [jamesqo/gun-violence-data](https://github.com/jamesqo/gun-violence-data)  
+  Collection method: download from the public GitHub repository, followed by local cleaning and restructuring earlier in the course workflow. This final report starts from a cleaned local working dataset, `stage3.csv`, derived from that source.  
+  Notes: the final report uses `stage3.csv` as the auditable analysis file rather than rebuilding the dataset during rendering. The file is not committed to GitHub because it exceeds the single-file size limit.
 
 ---
 
@@ -125,6 +125,5 @@ I did not use AI as a substitute for choosing the research question, designing t
 - **Final written report**: [`Final Episode/final_submission_episode.pdf`](Final%20Episode/final_submission_episode.pdf)
 - **Quarto source**: [`Final Episode/final_submission_episode.qmd`](Final%20Episode/final_submission_episode.qmd)
 - **Interactive map supplement**: [`Final Episode/images/interactive_incident_map.html`](Final%20Episode/images/interactive_incident_map.html)
-- **Slides used in the in-class presentation**: not added yet
-- **Updated final slides (full version)**: not added yet
+- **Slides**: to be added later
 - **Presentation video**: not added yet
