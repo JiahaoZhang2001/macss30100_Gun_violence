@@ -137,4 +137,4 @@ AI was mainly a support tool in the project rather than a replacement for my own
 - **Code walkthrough file**: [`Final Episode/presentation_code_walkthrough.Rmd`](Final%20Episode/presentation_code_walkthrough.Rmd)
 - **Interactive map webpage**: [Open the interactive map](https://jiahaozhang2001.github.io/macss30100_Gun_violence/)
 - **Slides**: [`presentation/slides/final_project_presentation_slides.pdf`](presentation/slides/final_project_presentation_slides.pdf)
-- **Presentation video**: [Google Drive link](https://drive.google.com/file/d/1eZAShYyInExYd08wRtQw8crkYdb7UEZF/view?usp=sharing)
+- **Presentation videos**: [Google Drive folder](https://drive.google.com/drive/folders/1rH68667CQ2pqFBizfaSw_BdULLF5VDxh?usp=drive_link)
