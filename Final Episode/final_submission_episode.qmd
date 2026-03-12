@@ -822,6 +822,33 @@ The main reason this unconstrained threshold-moving benchmark still matters is t
 The threshold table above uses validation-based balanced-accuracy selection alone, so the chosen cutoffs are relatively aggressive. To make that trade-off more explicit, I also re-ran threshold selection on the same 40,000-observation analysis setup with an added rule that thresholds had to be selected on the validation split under a specificity constraint of about 0.75 before choosing the best remaining cutoff. The table below then reports the held-out test performance of those preselected thresholds. This is the preferred practical operating-point analysis for the paper's final recommendation, because it shows what threshold moving looks like when false positives are constrained more directly without retuning on the test set.
 
 ```{r}
+#| label: threshold-constrained-logic
+#| echo: true
+#| eval: false
+choose_threshold_constrained <- function(fit_obj, val_data, min_specificity = 0.75) {
+  pred <- val_data |>
+    bind_cols(predict(fit_obj, val_data, type = "prob"))
+
+  map_dfr(seq(0.05, 0.95, by = 0.01), function(threshold) {
+    pred_class <- factor(
+      if_else(pred$.pred_fatal >= threshold, "fatal", "non_fatal"),
+      levels = c("non_fatal", "fatal")
+    )
+
+    tibble(
+      threshold = threshold,
+      bal_accuracy = bal_accuracy_vec(pred$fatal, pred_class),
+      sensitivity = sens_vec(pred$fatal, pred_class, event_level = "second"),
+      specificity = spec_vec(pred$fatal, pred_class, event_level = "second")
+    )
+  }) |>
+    filter(specificity >= min_specificity) |>
+    arrange(desc(bal_accuracy), abs(threshold - 0.5)) |>
+    slice(1)
+}
+```
+
+```{r}
 #| label: threshold-constrained-table
 knitr::kable(
   threshold_constrained_tbl |>
@@ -858,7 +885,7 @@ Under that task framing, the model comparison is easier to interpret. The baseli
 
 This preference also reflects the practical meaning of the prediction task. In a screening-style setting, missing fatal incidents is more costly than flagging some non-fatal incidents, but false positives should not increase without limit. A false negative means the model completely misses a higher-risk case, while a false positive usually means extra attention or follow-up on a case that may not need it. For that reason, I treat fatal recall as somewhat more important than precision or raw accuracy alone, but not as the only objective. The final recommendation is therefore an operating-point choice for this dataset and use case, not a universally optimal classifier.
 
-Several limitations remain. First, the source file contains important missingness and reporting variation, especially in detailed participant and narrative-style fields. Second, the binary fatal outcome is substantively meaningful but still coarse. Third, even the retained structured variables may reflect uneven reporting practices across places and years. Fourth, the final assessment still relies on an internal held-out test split rather than on a separate external validation dataset. A related transportability concern is especially important here: because the retained signal depends heavily on contextual and place-related features, performance may degrade when the model is transported to new regions, periods, or recording environments. Finally, the SHAP analysis is an approximate interpretation step on a smaller subset for computational reasons, so it should be used to summarize model behavior rather than to make fine-grained substantive claims. The main bottleneck in this project is that the strongest usable predictors are also the most context-dependent, which makes the final model more suitable for internal screening than for broad transport. With more time, the next step would be external validation on a later or separate incident file, along with a cleaner comparison of how much performance comes from broad location context versus simpler incident descriptors.
+Several limitations remain. First, the source file contains important missingness and reporting variation, especially in detailed participant and narrative-style fields. Second, the binary fatal outcome is substantively meaningful but still coarse. Third, even the retained structured variables may reflect uneven reporting practices across places and years. Fourth, the final assessment still relies on an internal held-out test split rather than on a separate external validation dataset. A related transportability concern is especially important here: because the retained signal depends heavily on contextual and place-related features, performance may degrade when the model is transported to new regions, periods, or recording environments. Finally, the SHAP analysis is an approximate interpretation step on a smaller subset for computational reasons, so it should be used to summarize model behavior rather than to make fine-grained substantive claims. A related substantive limitation is that the structured fields used here may capture broad context better than the immediate mechanism of fatality itself. That likely creates a ceiling on how well this kind of model can perform, even when the pipeline is carefully tuned. The main bottleneck in this project is that the strongest usable predictors are also the most context-dependent, which makes the final model more suitable for internal screening than for broad transport. With more time, the next step would be external validation on a later or separate incident file, along with a cleaner comparison of how much performance comes from broad location context versus simpler incident descriptors.
 
 ## 10. Conclusion
 This project used a cleaned incident-level dataset to predict whether a gun violence incident would be fatal or non-fatal. The final report keeps a leakage-safe pipeline, a restrained feature set, and a direct comparison between a formal logistic-regression baseline and two selected nonlinear models on a 40,000-observation modeling sample.
