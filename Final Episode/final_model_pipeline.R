@@ -135,6 +135,7 @@ logit_spec <- logistic_reg() |>
   set_engine("glm") |>
   set_mode("classification")
 
+# Early SVM benchmark kept here for reference only; it was not retained in the final report.
 svm_spec <- svm_rbf(cost = 10, rbf_sigma = 0.01) |>
   set_engine("kernlab") |>
   set_mode("classification")
@@ -255,6 +256,8 @@ logit_fit_val <- workflow() |>
 
 logit_best_th <- choose_threshold(logit_fit_val, valid)
 
+# This branch documents the earlier SVM check, but the final submitted comparison keeps only
+# logistic regression, random forest, and XGBoost because SVM was not carried into the final narrative.
 svm_fit <- workflow() |>
   add_recipe(build_recipe(train_data, normalize = TRUE)) |>
   add_model(svm_spec) |>
