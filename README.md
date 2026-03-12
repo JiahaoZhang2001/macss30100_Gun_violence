@@ -120,7 +120,6 @@ I used AI tools as support tools during the project, mainly for:
 - debugging small coding issues in R and Quarto
 - learning how to use some packages and functions more effectively
 - understanding what a fuller model deployment workflow would look like
-- renaming files and organizing the final submission repository
 
 AI was mainly a support tool in the project rather than a replacement for my own decisions. When I used suggestions from AI, I tried to understand them before applying them and then adapted them to my own work. I remain responsible for the accuracy of the report, code, and repository contents.
 
