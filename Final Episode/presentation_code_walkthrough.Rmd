@@ -1,0 +1,259 @@
+---
+title: "Code Walkthrough for Final Presentation"
+author: "Jiahao Zhang"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+.libPaths(c("r-lib", .libPaths()))
+
+library(tidyverse)
+library(tidymodels)
+library(themis)
+library(janitor)
+
+set.seed(30100)
+```
+
+# 1. Load the cleaned analysis file and define the target
+
+```{r load-and-target, echo=TRUE}
+stage3 <- readr::read_csv("Data/stage3.csv", show_col_types = FALSE) |>
+  clean_names() |>
+  mutate(
+    date = as.Date(date),
+    year = as.integer(format(date, "%Y")),
+    month = as.integer(format(date, "%m")),
+    fatal = factor(if_else(n_killed > 0, "fatal", "non_fatal"),
+                   levels = c("non_fatal", "fatal"))
+  )
+```
+
+This is the main target construction step. I start from the cleaned local file and define the binary outcome `fatal` from `n_killed > 0`.
+
+# 2. Build the final structured feature set
+
+```{r feature-construction, echo=TRUE}
+analysis_df <- stage3 |>
+  transmute(
+    fatal,
+    year = factor(year),
+    month = factor(month),
+    day_of_week = factor(weekdays(date)),
+    weekend = factor(if_else(lubridate::wday(date, week_start = 1) >= 6, "weekend", "weekday")),
+    state = factor(state),
+    city_or_county = factor(city_or_county),
+    gun_stolen = factor(gun_stolen),
+    gun_type = factor(gun_type),
+    n_guns_involved,
+    latitude,
+    longitude,
+    congressional_district = factor(congressional_district),
+    state_house_district = factor(state_house_district),
+    state_senate_district = factor(state_senate_district),
+    addr_has_block = factor(if_else(str_detect(replace_na(address, ""), regex("block", ignore_case = TRUE)), "yes", "no")),
+    addr_has_intersection = factor(if_else(str_detect(replace_na(address, ""), regex(" and | & | at ", ignore_case = TRUE)), "yes", "no")),
+    addr_has_road = factor(if_else(str_detect(replace_na(address, ""), regex("road|\\brd\\b|street|\\bst\\b|avenue|\\bave\\b|boulevard|\\bblvd\\b", ignore_case = TRUE)), "yes", "no")),
+    has_teen = factor(if_else(str_detect(replace_na(participant_age_group, ""), stringr::fixed("Teen 12-17")), "yes", "no")),
+    has_child = factor(if_else(str_detect(replace_na(participant_age_group, ""), stringr::fixed("Child 0-11")), "yes", "no"))
+  )
+```
+
+This is the final feature-engineering step. I turn raw date fields, address text, and age-group text into simpler structured indicators that can go into the model.
+
+# 3. Split the data and build a leakage-safe recipe
+
+```{r split-and-recipe, echo=TRUE}
+split_obj <- initial_split(analysis_df, prop = 0.80, strata = fatal)
+train_data <- training(split_obj)
+test_data <- testing(split_obj)
+
+folds <- vfold_cv(train_data, v = 3, strata = fatal)
+
+basic_recipe <- recipe(fatal ~ ., data = train_data) |>
+  step_indicate_na(n_guns_involved, latitude, longitude) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_unknown(all_nominal_predictors()) |>
+  step_other(city_or_county, gun_stolen, gun_type, threshold = 0.01, other = "other") |>
+  step_novel(all_nominal_predictors()) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_zv(all_predictors())
+
+normalized_recipe <- basic_recipe |>
+  step_normalize(all_numeric_predictors())
+```
+
+This is the main leakage-safe preprocessing pipeline. All learned steps are estimated on the training data only.
+
+# 4. Define the three comparison models
+
+```{r model-specs, echo=TRUE}
+rf_spec <- rand_forest(mtry = 25, min_n = 5, trees = 400) |>
+  set_engine("ranger", probability = TRUE) |>
+  set_mode("classification")
+
+xgb_spec <- boost_tree(
+  trees = 363,
+  tree_depth = 2,
+  learn_rate = 0.0187,
+  mtry = 8,
+  min_n = 13,
+  loss_reduction = 2.31,
+  sample_size = 0.727
+) |>
+  set_engine("xgboost", eval_metric = "auc") |>
+  set_mode("classification")
+
+logit_spec <- logistic_reg() |>
+  set_engine("glm") |>
+  set_mode("classification")
+```
+
+Here I define the three primary models used in the final comparison: logistic regression, random forest, and XGBoost.
+
+# 5. Show the fitted workflows
+
+```{r model-workflows, echo=TRUE}
+rf_fit <- workflow() |>
+  add_recipe(basic_recipe) |>
+  add_model(rf_spec) |>
+  fit(train_data)
+
+xgb_fit <- workflow() |>
+  add_recipe(basic_recipe) |>
+  add_model(xgb_spec) |>
+  fit(train_data)
+
+logit_fit <- workflow() |>
+  add_recipe(normalized_recipe) |>
+  add_model(logit_spec) |>
+  fit(train_data)
+```
+
+This is where I combine preprocessing and modeling in a single `workflow()` and fit each model on the training data.
+
+# 6. Tune the tree-based models with cross-validation
+
+```{r tuning-setup, echo=TRUE, eval=FALSE}
+roc_auc_fatal <- metric_tweak("roc_auc_fatal", roc_auc, event_level = "second")
+metric_fn <- metric_set(roc_auc_fatal, accuracy, bal_accuracy)
+
+folds <- vfold_cv(train_data, v = 3, strata = fatal)
+
+rf_tuned <- tune_grid(
+  rf_workflow,
+  resamples = folds,
+  grid = rf_grid,
+  metrics = metric_fn,
+  control = control_grid(save_workflow = TRUE)
+)
+
+xgb_tuned <- tune_grid(
+  xgb_workflow,
+  resamples = folds,
+  grid = xgb_grid,
+  metrics = metric_fn,
+  control = control_grid(save_workflow = TRUE)
+)
+```
+
+The tuning step is only for the tree-based models. I use 3-fold cross-validation and select the final tree specifications by ROC AUC for the fatal class.
+
+# 7. Class weighting as one imbalance strategy
+
+```{r class-weighting, echo=TRUE, eval=FALSE}
+class_ratio <- sum(train_data$fatal == "non_fatal") / sum(train_data$fatal == "fatal")
+
+rf_weighted_fit <- workflow() |>
+  add_recipe(basic_recipe) |>
+  add_model(
+    rand_forest(mtry = 25, min_n = 5, trees = 400) |>
+      set_engine(
+        "ranger",
+        probability = TRUE,
+        class.weights = c(non_fatal = 1, fatal = class_ratio)
+      ) |>
+      set_mode("classification")
+  ) |>
+  fit(train_data)
+```
+
+This version keeps the same training rows but penalizes mistakes on fatal incidents more heavily.
+
+# 8. Oversampling as another imbalance strategy
+
+```{r oversampling, echo=TRUE, eval=FALSE}
+rf_oversampled_recipe <- recipe(fatal ~ ., data = train_data) |>
+  step_upsample(fatal, over_ratio = 1, seed = 30100) |>
+  step_indicate_na(n_guns_involved, latitude, longitude) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_unknown(all_nominal_predictors()) |>
+  step_other(city_or_county, gun_stolen, gun_type, threshold = 0.01, other = "other") |>
+  step_novel(all_nominal_predictors()) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_zv(all_predictors())
+
+rf_oversampled_fit <- workflow() |>
+  add_recipe(rf_oversampled_recipe) |>
+  add_model(rf_spec) |>
+  fit(train_data)
+```
+
+This version changes the training distribution by resampling the minority class to a 1:1 ratio.
+
+# 9. Threshold moving as the main decision-rule trick
+
+```{r threshold-logic, echo=TRUE}
+choose_threshold <- function(fit_obj, val_data) {
+  pred <- val_data |>
+    bind_cols(predict(fit_obj, val_data, type = "prob"))
+
+  map_dfr(seq(0.05, 0.95, by = 0.01), function(threshold) {
+    pred_class <- factor(
+      if_else(pred$.pred_fatal >= threshold, "fatal", "non_fatal"),
+      levels = c("non_fatal", "fatal")
+    )
+
+    tibble(
+      threshold = threshold,
+      bal_accuracy = bal_accuracy_vec(pred$fatal, pred_class),
+      sensitivity = sens_vec(pred$fatal, pred_class, event_level = "second"),
+      specificity = spec_vec(pred$fatal, pred_class, event_level = "second")
+    )
+  }) |>
+    arrange(desc(bal_accuracy), abs(threshold - 0.5)) |>
+    slice(1)
+}
+```
+
+This is the main special trick in the project. Instead of stopping at the default cutoff, I search over thresholds and choose the best one on the validation split.
+
+# 10. Add a more conservative specificity-constrained threshold rule
+
+```{r threshold-constrained, echo=TRUE}
+choose_threshold_constrained <- function(fit_obj, val_data, min_specificity = 0.75) {
+  pred <- val_data |>
+    bind_cols(predict(fit_obj, val_data, type = "prob"))
+
+  map_dfr(seq(0.05, 0.95, by = 0.01), function(threshold) {
+    pred_class <- factor(
+      if_else(pred$.pred_fatal >= threshold, "fatal", "non_fatal"),
+      levels = c("non_fatal", "fatal")
+    )
+
+    tibble(
+      threshold = threshold,
+      bal_accuracy = bal_accuracy_vec(pred$fatal, pred_class),
+      sensitivity = sens_vec(pred$fatal, pred_class, event_level = "second"),
+      specificity = spec_vec(pred$fatal, pred_class, event_level = "second")
+    )
+  }) |>
+    filter(specificity >= min_specificity) |>
+    arrange(desc(bal_accuracy), abs(threshold - 0.5)) |>
+    slice(1)
+}
+```
+
+This is the final operating-rule step. I still compare thresholds by balanced accuracy, but only among thresholds that keep specificity near the target bound.
+
