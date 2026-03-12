@@ -6,7 +6,7 @@
 
 ## Summary
 
-This repository contains my final project for MACS 30100. The project studies whether structured incident-level records can help distinguish fatal gun violence incidents from non-fatal ones.
+This repository contains my final project for MACS 30100. The project studies whether structured incident-level records contain enough signal to support limited screening between fatal and non-fatal gun violence incidents.
 
 - **Topic**: binary prediction of fatal versus non-fatal gun violence incidents
 - **Research question**: can structured incident-level information be used to distinguish fatal gun violence incidents from non-fatal incidents, and does it provide useful signal for screening higher-risk cases?
