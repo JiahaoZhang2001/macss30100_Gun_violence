@@ -30,7 +30,7 @@ stage3 <- readr::read_csv("Data/stage3.csv", show_col_types = FALSE) |>
   )
 ```
 
-This is the main target construction step. I start from the cleaned local file and define the binary outcome `fatal` from `n_killed > 0`.
+Main target step: I load the cleaned file and code `fatal` from `n_killed > 0`.
 
 # 2. Build the final structured feature set
 
@@ -60,7 +60,7 @@ analysis_df <- stage3 |>
   )
 ```
 
-This is the final feature-engineering step. I turn raw date fields, address text, and age-group text into simpler structured indicators that can go into the model.
+Here I turn date, address text, and age-group text into structured predictors for the model.
 
 # 3. Split the data and build a leakage-safe recipe
 
@@ -84,7 +84,7 @@ normalized_recipe <- basic_recipe |>
   step_normalize(all_numeric_predictors())
 ```
 
-This is the main leakage-safe preprocessing pipeline. All learned steps are estimated on the training data only.
+This is the leakage-safe preprocessing pipeline. All learned steps come from the training data only.
 
 # 4. Define the three comparison models
 
@@ -110,7 +110,7 @@ logit_spec <- logistic_reg() |>
   set_mode("classification")
 ```
 
-Here I define the three primary models used in the final comparison: logistic regression, random forest, and XGBoost.
+These are the three main models in the final comparison: logistic regression, random forest, and XGBoost.
 
 # 5. Show the fitted workflows
 
@@ -131,7 +131,7 @@ logit_fit <- workflow() |>
   fit(train_data)
 ```
 
-This is where I combine preprocessing and modeling in a single `workflow()` and fit each model on the training data.
+Here I combine preprocessing and modeling in one `workflow()` and fit each model on the training data.
 
 # 6. Tune the tree-based models with cross-validation
 
@@ -158,7 +158,7 @@ xgb_tuned <- tune_grid(
 )
 ```
 
-The tuning step is only for the tree-based models. I use 3-fold cross-validation and select the final tree specifications by ROC AUC for the fatal class.
+This is the tuning step for the tree-based models. I use 3-fold CV and select the final settings by ROC AUC for the fatal class.
 
 # 7. Class weighting as one imbalance strategy
 
@@ -179,7 +179,7 @@ rf_weighted_fit <- workflow() |>
   fit(train_data)
 ```
 
-This version keeps the same training rows but penalizes mistakes on fatal incidents more heavily.
+This version keeps the same rows but gives more weight to mistakes on fatal incidents.
 
 # 8. Oversampling as another imbalance strategy
 
@@ -200,7 +200,7 @@ rf_oversampled_fit <- workflow() |>
   fit(train_data)
 ```
 
-This version changes the training distribution by resampling the minority class to a 1:1 ratio.
+This version changes the training distribution by upsampling the fatal class to a 1:1 ratio.
 
 # 9. Threshold moving as the main decision-rule trick
 
@@ -227,7 +227,7 @@ choose_threshold <- function(fit_obj, val_data) {
 }
 ```
 
-This is the main special trick in the project. Instead of stopping at the default cutoff, I search over thresholds and choose the best one on the validation split.
+This is the main extra step in the project. Instead of keeping the default cutoff, I search over thresholds on the validation split.
 
 # 10. Add a more conservative specificity-constrained threshold rule
 
@@ -255,5 +255,4 @@ choose_threshold_constrained <- function(fit_obj, val_data, min_specificity = 0.
 }
 ```
 
-This is the final operating-rule step. I still compare thresholds by balanced accuracy, but only among thresholds that keep specificity near the target bound.
-
+This is the more conservative threshold rule. I still compare thresholds by balanced accuracy, but only after keeping thresholds with specificity near the target bound.
