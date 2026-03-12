@@ -32,6 +32,12 @@ stage3 <- readr::read_csv("Data/stage3.csv", show_col_types = FALSE) |>
 
 Main target step: I load the cleaned file and code `fatal` from `n_killed > 0`.
 
+```{r target-balance, echo=FALSE}
+stage3 |>
+  count(fatal) |>
+  mutate(prop = scales::percent(n / sum(n), accuracy = 0.1))
+```
+
 # 2. Build the final structured feature set
 
 ```{r feature-construction, echo=TRUE}
@@ -62,6 +68,12 @@ analysis_df <- stage3 |>
 
 Here I turn date, address text, and age-group text into structured predictors for the model.
 
+```{r feature-preview, echo=FALSE}
+analysis_df |>
+  select(fatal, year, month, weekend, addr_has_block, has_teen) |>
+  slice_head(n = 6)
+```
+
 # 3. Split the data and build a leakage-safe recipe
 
 ```{r split-and-recipe, echo=TRUE}
@@ -85,6 +97,16 @@ normalized_recipe <- basic_recipe |>
 ```
 
 This is the leakage-safe preprocessing pipeline. All learned steps come from the training data only.
+
+```{r split-summary, echo=FALSE}
+tibble(
+  split = c("train", "test"),
+  n = c(nrow(train_data), nrow(test_data)),
+  fatal_share = c(mean(train_data$fatal == "fatal"),
+                  mean(test_data$fatal == "fatal"))
+) |>
+  mutate(fatal_share = scales::percent(fatal_share, accuracy = 0.1))
+```
 
 # 4. Define the three comparison models
 
@@ -159,6 +181,18 @@ xgb_tuned <- tune_grid(
 ```
 
 This is the tuning step for the tree-based models. I use 3-fold CV and select the final settings by ROC AUC for the fatal class.
+
+```{r tuning-output, echo=FALSE}
+tibble(
+  model = c("Random forest", "XGBoost"),
+  trees = c(400, 363),
+  mtry = c(25, 8),
+  min_n = c(5, 13),
+  tree_depth = c(NA, 2),
+  learn_rate = c(NA, 0.0187),
+  sample_size = c(NA, 0.727)
+)
+```
 
 # 7. Class weighting as one imbalance strategy
 
@@ -256,3 +290,7 @@ choose_threshold_constrained <- function(fit_obj, val_data, min_specificity = 0.
 ```
 
 This is the more conservative threshold rule. I still compare thresholds by balanced accuracy, but only after keeping thresholds with specificity near the target bound.
+
+```{r threshold-output, echo=FALSE}
+readr::read_csv("results/threshold_results_specificity_constrained.csv", show_col_types = FALSE)
+```
