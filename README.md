@@ -43,9 +43,13 @@ macss30100_Gun_violence/
 │   ├── .nojekyll
 │   ├── index.html
 │   └── interactive_incident_map.html
+├── presentation/
+│   └── slides/
+│       └── final_project_presentation_slides.pdf
 └── Final Episode/
     ├── final_submission_episode.qmd
     ├── final_submission_episode.pdf
+    ├── presentation_code_walkthrough.Rmd
     ├── final_model_pipeline.R
     ├── tune_tree_models.R
     ├── bibliography.bib
@@ -64,6 +68,7 @@ macss30100_Gun_violence/
 
 - `Final Episode/` contains the final report, main analysis scripts, saved model results, and supporting figures.
 - `docs/` stores the GitHub Pages files for the interactive map supplement.
+- `presentation/` stores the presentation slides used for the talk.
 - `Final Episode/results/` stores the saved result tables used in the report.
 - `Final Episode/images/` stores figures and supplementary visual materials referenced in the final submission.
 
