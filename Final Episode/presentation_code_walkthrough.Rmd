@@ -294,3 +294,31 @@ This is the more conservative threshold rule. I still compare thresholds by bala
 ```{r threshold-output, echo=FALSE}
 readr::read_csv("results/threshold_results_specificity_constrained.csv", show_col_types = FALSE)
 ```
+
+# 11. Score the final models on the held-out test set
+
+```{r final-scoring, echo=TRUE, eval=FALSE}
+score_model <- function(truth, prob, threshold = 0.5) {
+  pred_class <- factor(
+    if_else(prob >= threshold, "fatal", "non_fatal"),
+    levels = c("non_fatal", "fatal")
+  )
+
+  tibble(
+    roc_auc = roc_auc_vec(truth, prob, event_level = "second"),
+    bal_accuracy = bal_accuracy_vec(truth, pred_class),
+    sensitivity = sens_vec(truth, pred_class, event_level = "second"),
+    specificity = spec_vec(truth, pred_class, event_level = "second")
+  )
+}
+```
+
+This is the final scoring step. After fitting the models and choosing the threshold rule, I use the held-out test set to calculate ROC AUC, balanced accuracy, sensitivity, and specificity.
+
+```{r final-results-preview, echo=FALSE}
+readr::read_csv("results/model_results_imbalance_strategies.csv", show_col_types = FALSE) |>
+  select(setup, threshold, roc_auc, bal_accuracy, sensitivity_fatal, specificity_nonfatal) |>
+  slice_head(n = 6)
+```
+
+Short note: I also tried an SVM branch earlier, but it was not kept in the final report because it did not affect the final recommendation.
